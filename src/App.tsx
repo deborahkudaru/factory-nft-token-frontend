@@ -11,8 +11,7 @@ import TokenList from './components/TokenList';
 import NFTList from './components/NFTList';
 import Footer from './components/Footer';
 
-// Factory contract address - replace with your deployed contract address
-const FACTORY_ADDRESS = '0x123456789abcdef123456789abcdef123456789a';
+const FACTORY_ADDRESS = '0x2DA0C0a51f42a26D292460F420F39761FBdeD643';
 
 const App: React.FC = () => {
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
