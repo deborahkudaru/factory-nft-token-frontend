@@ -201,11 +201,6 @@ const App: React.FC = () => {
                           ? "Deploying..."
                           : "Deploy NFT Collection"}
                       </Button>
-                      {isNFTSuccess && (
-                        <p className="text-green-400 mt-2">
-                          Token Deployed Successfully!
-                        </p>
-                      )}
                     </CardFooter>
                   </form>
                 </Card>
@@ -291,9 +286,6 @@ const App: React.FC = () => {
                               {nft.address}
                             </p>
                           </div>
-                          <Button variant="outline" size="sm">
-                            View
-                          </Button>
                         </div>
                       </div>
                     ))
