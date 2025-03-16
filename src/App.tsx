@@ -12,50 +12,78 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "./components/Navbar";
-import { useDeployToken, useDeployedTokens, useDeployNFT, useDeployedNFTs } from "./hooks/useFactory";
+import {
+  useDeployToken,
+  useDeployedTokens,
+  useDeployNFT,
+  useDeployedNFTs,
+} from "./hooks/useFactory";
+import { Toaster, toast } from "react-hot-toast";
 
 const App: React.FC = () => {
-
   // Token form state
-    const {
-      name,
-      setName,
-      symbol,
-      setSymbol,
-      supply,
-      setSupply,
-      deployToken,
-      isLoading: isTokenLoading,
-      isSuccess: isTokenSuccess,
-    } = useDeployToken();
-  
-    const { tokens, isLoading: isTokensLoading, error: tokensError } = useDeployedTokens();
-  
-    const {
-      name: nftName,
-      setName: setNFTName,
-      symbol: nftSymbol,
-      setSymbol: setNFTSymbol,
-      deployNFT,
-      isLoading: isNFTLoading,
-      isSuccess: isNFTSuccess,
-    } = useDeployNFT();
-  
-    const { nfts, isLoading: isNFTsLoading, error: nftsError } = useDeployedNFTs();
+  const {
+    name,
+    setName,
+    symbol,
+    setSymbol,
+    supply,
+    setSupply,
+    deployToken,
+    isLoading: isTokenLoading,
+    isSuccess: isTokenSuccess,
+  } = useDeployToken();
 
-    const handleTokenSubmit = (e: React.FormEvent) => {
-      e.preventDefault(); 
-      deployToken();
-    };
-  
-    const handleNFTSubmit = (e: React.FormEvent) => {
-      e.preventDefault(); 
-      deployNFT();
-    };
+  const {
+    tokens,
+    isLoading: isTokensLoading,
+    error: tokensError,
+  } = useDeployedTokens();
 
+  const {
+    name: nftName,
+    setName: setNFTName,
+    symbol: nftSymbol,
+    setSymbol: setNFTSymbol,
+    deployNFT,
+    isLoading: isNFTLoading,
+    isSuccess: isNFTSuccess,
+  } = useDeployNFT();
+
+  const {
+    nfts,
+    isLoading: isNFTsLoading,
+    error: nftsError,
+  } = useDeployedNFTs();
+
+  const handleTokenSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    deployToken();
+  };
+
+  const handleNFTSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    deployNFT();
+  };
+
+  if (isNFTSuccess) {
+    toast.success("NFT Deployed Successfully!");
+  }
+
+  if (isTokenSuccess) {
+    toast.success("Token Deployed Successfully!");
+  }
+
+  if (tokensError) {
+    toast.error(`Error: ${tokensError.message || "Something went wrong"}`);
+  }
+  if (nftsError) {
+    toast.error(`Error: ${nftsError.message || "Something went wrong"}`);
+  }
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <Navbar />
+      <Toaster position="top-right" />
       <div className="max-w-6xl mx-auto mt-5">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Token Factory</h1>
@@ -126,11 +154,6 @@ const App: React.FC = () => {
                       >
                         {isTokenLoading ? "Deploying..." : "Deploy Token"}
                       </Button>
-                      {isTokenSuccess && (
-                        <p className="text-green-400 mt-2">
-                          Token Deployed Successfully!
-                        </p>
-                      )}
                     </CardFooter>
                   </form>
                 </Card>
@@ -192,17 +215,23 @@ const App: React.FC = () => {
 
           {/* Deployed Assets Section */}
           <div className="space-y-8">
-            {/* <Card>
+            <Card>
               <CardHeader>
                 <CardTitle>Your Deployed Tokens</CardTitle>
-                <CardDescription>
-                  Total: {mockTokens.length} Tokens
-                </CardDescription>
+                <CardDescription>Total: {tokens.length} Tokens</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {mockTokens.length > 0 ? (
-                    mockTokens.map((token, index) => (
+                  {isTokensLoading ? (
+                    <p className="text-gray-500 text-center py-4">
+                      Loading tokens...
+                    </p>
+                  ) : tokensError ? (
+                    <p className="text-red-500 text-center py-4">
+                      Error fetching tokens
+                    </p>
+                  ) : tokens.length > 0 ? (
+                    tokens.map((token, index) => (
                       <div
                         key={index}
                         className="p-4 rounded-lg border border-gray-200 bg-white"
@@ -212,13 +241,11 @@ const App: React.FC = () => {
                             <h3 className="font-medium">
                               {token.name} ({token.symbol})
                             </h3>
+                            <h2>{token.supply}</h2>
                             <p className="text-sm text-gray-500 mt-1">
                               {token.address}
                             </p>
                           </div>
-                          <Button variant="outline" size="sm">
-                            View
-                          </Button>
                         </div>
                       </div>
                     ))
@@ -229,19 +256,28 @@ const App: React.FC = () => {
                   )}
                 </div>
               </CardContent>
-            </Card> */}
-
-            {/* <Card>
+            </Card>
+            <Card>
               <CardHeader>
                 <CardTitle>Your Deployed NFTs</CardTitle>
                 <CardDescription>
-                  Total: {mockNFTs.length} Collections
+                  Total: {nfts?.length || 0} Collections
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {nftsError && (
+                  <p className="text-red-500 text-center py-2">
+                    ❌ Error: {nftsError.message || "Something went wrong"}
+                  </p>
+                )}
+
                 <div className="space-y-2">
-                  {mockNFTs.length > 0 ? (
-                    mockNFTs.map((nft, index) => (
+                  {isNFTLoading ? (
+                    <p className="text-gray-500 text-center py-4">
+                      Loading NFTs...
+                    </p>
+                  ) : nfts.length > 0 ? (
+                    nfts.map((nft, index) => (
                       <div
                         key={index}
                         className="p-4 rounded-lg border border-gray-200 bg-white"
@@ -268,7 +304,7 @@ const App: React.FC = () => {
                   )}
                 </div>
               </CardContent>
-            </Card> */}
+            </Card>
           </div>
         </div>
       </div>
