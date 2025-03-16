@@ -60,3 +60,48 @@ export function useDeployedTokens() {
 
   return { tokens: tokens || [], isLoading, error };
 }
+
+
+/** 
+ * Hook to Deploy an NFT
+ */
+export function useDeployNFT() {
+   const [name, setName] = useState("");
+   const [symbol, setSymbol] = useState("");
+ 
+   const { data: hash, writeContract } = useWriteContract();
+ 
+   const { isLoading, isSuccess } = useWaitForTransactionReceipt({ hash });
+ 
+   const deployNFT = async () => {
+     writeContract({
+       address: factoryAddress,
+       abi: factoryABI,
+       functionName: "deployNFT",
+       args: [name, symbol],
+     });
+   };
+ 
+   return {
+     name,
+     setName,
+     symbol,
+     setSymbol,
+     deployNFT,
+     isLoading,
+     isSuccess,
+   };
+ }
+ 
+ /** 
+  * Hook to Fetch Deployed NFTs
+  */
+ export function useDeployedNFTs() {
+   const { data: nfts, isLoading, error } = useReadContract({
+     address: factoryAddress,
+     abi: factoryABI,
+     functionName: "nfts",
+   });
+ 
+   return { nfts: nfts || [], isLoading, error };
+ }

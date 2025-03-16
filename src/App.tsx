@@ -1,72 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Navbar from './components/Navbar';
-
-// Mock data for deployed tokens and NFTs
-const mockTokens = [
-  { address: "0x1234...5678", name: "Example Token", symbol: "EXT" },
-  { address: "0x8765...4321", name: "Demo Token", symbol: "DMT" }
-];
-
-const mockNFTs = [
-  { address: "0xabcd...efgh", name: "Example NFT", symbol: "ENFT" },
-  { address: "0xijkl...mnop", name: "Demo NFT", symbol: "DNFT" }
-];
+import Navbar from "./components/Navbar";
+import { useDeployToken, useDeployedTokens } from "./hooks/useFactory";
 
 const App: React.FC = () => {
   // Token form state
-  const [tokenName, setTokenName] = useState<string>("");
-  const [tokenSymbol, setTokenSymbol] = useState<string>("");
-  const [tokenSupply, setTokenSupply] = useState<string>("");
-  
-  // NFT form state
-  const [nftName, setNftName] = useState<string>("");
-  const [nftSymbol, setNftSymbol] = useState<string>("");
-  
-  // Loading states
-  const [isDeployingToken, setIsDeployingToken] = useState<boolean>(false);
-  const [isDeployingNFT, setIsDeployingNFT] = useState<boolean>(false);
-  
-  // Mock token deployment
-  const handleTokenDeploy = (e: React.FormEvent) => {
+  const {
+    name,
+    setName,
+    symbol,
+    setSymbol,
+    supply,
+    setSupply,
+    deployToken,
+    isLoading,
+    isSuccess,
+  } = useDeployToken();
+
+  const { tokens, isLoading: loadingTokens } = useDeployedTokens();
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setIsDeployingToken(true);
-    
-    // Simulate deployment delay
-    setTimeout(() => {
-      // Reset form
-      setTokenName("");
-      setTokenSymbol("");
-      setTokenSupply("");
-      setIsDeployingToken(false);
-      
-      // In a real application, we would call the contract here
-      console.log("Deploy token with:", { tokenName, tokenSymbol, tokenSupply });
-      
-      // Display success notification
-      alert(`Token ${tokenName} (${tokenSymbol}) deployed successfully!`);
-    }, 2000);
+    deployToken();
   };
-  
+
   // Mock NFT deployment
   const handleNFTDeploy = (e: React.FormEvent) => {
     e.preventDefault();
     setIsDeployingNFT(true);
-    
+
     // Simulate deployment delay
     setTimeout(() => {
       // Reset form
       setNftName("");
       setNftSymbol("");
       setIsDeployingNFT(false);
-      
+
       // In a real application, we would call the contract here
       console.log("Deploy NFT with:", { nftName, nftSymbol });
-      
+
       // Display success notification
       alert(`NFT ${nftName} (${nftSymbol}) deployed successfully!`);
     }, 2000);
@@ -78,9 +61,11 @@ const App: React.FC = () => {
       <div className="max-w-6xl mx-auto mt-5">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Token Factory</h1>
-          <p className="text-gray-600">Deploy ERC20 Tokens and NFTs with ease</p>
+          <p className="text-gray-600">
+            Deploy ERC20 Tokens and NFTs with ease
+          </p>
         </header>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Deploy New Tokens/NFTs Section */}
           <div>
@@ -89,64 +74,70 @@ const App: React.FC = () => {
                 <TabsTrigger value="token">ERC20 Token</TabsTrigger>
                 <TabsTrigger value="nft">NFT</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="token">
                 <Card>
                   <CardHeader>
                     <CardTitle>Deploy New ERC20 Token</CardTitle>
                     <CardDescription>
-                      Create your own ERC20 token with custom name, symbol, and supply
+                      Create your own ERC20 token with custom name, symbol, and
+                      supply
                     </CardDescription>
                   </CardHeader>
-                  <form onSubmit={handleTokenDeploy}>
+                  <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="tokenName">Token Name</Label>
-                        <Input 
-                          id="tokenName" 
-                          placeholder="e.g. My Token" 
+                        <Input
+                          id="tokenName"
+                          placeholder="e.g. My Token"
                           required
-                          value={tokenName}
-                          onChange={(e) => setTokenName(e.target.value)}
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
                         />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="tokenSymbol">Token Symbol</Label>
-                        <Input 
-                          id="tokenSymbol" 
-                          placeholder="e.g. MTK" 
+                        <Input
+                          id="tokenSymbol"
+                          placeholder="e.g. MTK"
                           required
                           maxLength={8}
-                          value={tokenSymbol}
-                          onChange={(e) => setTokenSymbol(e.target.value)}
+                          value={symbol}
+                          onChange={(e) => setSymbol(e.target.value)}
                         />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="tokenSupply">Initial Supply</Label>
-                        <Input 
-                          id="tokenSupply" 
-                          type="number" 
-                          placeholder="e.g. 1000000" 
+                        <Input
+                          id="tokenSupply"
+                          type="number"
+                          placeholder="e.g. 1000000"
                           required
                           min="1"
-                          value={tokenSupply}
-                          onChange={(e) => setTokenSupply(e.target.value)}
+                          value={supply}
+                          onChange={(e) => setSupply(e.target.value)}
                         />
                       </div>
                     </CardContent>
                     <CardFooter>
-                      <Button 
-                        type="submit" 
-                        className="w-full" 
-                        disabled={isDeployingToken}
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={isLoading}
                       >
-                        {isDeployingToken ? "Deploying..." : "Deploy Token"}
+                        {isLoading ? "Deploying..." : "Deploy Token"}
                       </Button>
+                      {isSuccess && (
+                        <p className="text-green-400 mt-2">
+                          Token Deployed Successfully!
+                        </p>
+                      )}
                     </CardFooter>
                   </form>
                 </Card>
               </TabsContent>
-              
+
               <TabsContent value="nft">
                 <Card>
                   <CardHeader>
@@ -159,9 +150,9 @@ const App: React.FC = () => {
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="nftName">Collection Name</Label>
-                        <Input 
-                          id="nftName" 
-                          placeholder="e.g. My NFT Collection" 
+                        <Input
+                          id="nftName"
+                          placeholder="e.g. My NFT Collection"
                           required
                           value={nftName}
                           onChange={(e) => setNftName(e.target.value)}
@@ -169,9 +160,9 @@ const App: React.FC = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="nftSymbol">Collection Symbol</Label>
-                        <Input 
-                          id="nftSymbol" 
-                          placeholder="e.g. MNFT" 
+                        <Input
+                          id="nftSymbol"
+                          placeholder="e.g. MNFT"
                           required
                           maxLength={8}
                           value={nftSymbol}
@@ -180,12 +171,14 @@ const App: React.FC = () => {
                       </div>
                     </CardContent>
                     <CardFooter>
-                      <Button 
-                        type="submit" 
-                        className="w-full" 
+                      <Button
+                        type="submit"
+                        className="w-full"
                         disabled={isDeployingNFT}
                       >
-                        {isDeployingNFT ? "Deploying..." : "Deploy NFT Collection"}
+                        {isDeployingNFT
+                          ? "Deploying..."
+                          : "Deploy NFT Collection"}
                       </Button>
                     </CardFooter>
                   </form>
@@ -193,7 +186,7 @@ const App: React.FC = () => {
               </TabsContent>
             </Tabs>
           </div>
-          
+
           {/* Deployed Assets Section */}
           <div className="space-y-8">
             <Card>
@@ -207,11 +200,18 @@ const App: React.FC = () => {
                 <div className="space-y-2">
                   {mockTokens.length > 0 ? (
                     mockTokens.map((token, index) => (
-                      <div key={index} className="p-4 rounded-lg border border-gray-200 bg-white">
+                      <div
+                        key={index}
+                        className="p-4 rounded-lg border border-gray-200 bg-white"
+                      >
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className="font-medium">{token.name} ({token.symbol})</h3>
-                            <p className="text-sm text-gray-500 mt-1">{token.address}</p>
+                            <h3 className="font-medium">
+                              {token.name} ({token.symbol})
+                            </h3>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {token.address}
+                            </p>
                           </div>
                           <Button variant="outline" size="sm">
                             View
@@ -220,12 +220,14 @@ const App: React.FC = () => {
                       </div>
                     ))
                   ) : (
-                    <p className="text-gray-500 text-center py-4">No tokens deployed yet</p>
+                    <p className="text-gray-500 text-center py-4">
+                      No tokens deployed yet
+                    </p>
                   )}
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Your Deployed NFTs</CardTitle>
@@ -237,11 +239,18 @@ const App: React.FC = () => {
                 <div className="space-y-2">
                   {mockNFTs.length > 0 ? (
                     mockNFTs.map((nft, index) => (
-                      <div key={index} className="p-4 rounded-lg border border-gray-200 bg-white">
+                      <div
+                        key={index}
+                        className="p-4 rounded-lg border border-gray-200 bg-white"
+                      >
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className="font-medium">{nft.name} ({nft.symbol})</h3>
-                            <p className="text-sm text-gray-500 mt-1">{nft.address}</p>
+                            <h3 className="font-medium">
+                              {nft.name} ({nft.symbol})
+                            </h3>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {nft.address}
+                            </p>
                           </div>
                           <Button variant="outline" size="sm">
                             View
@@ -250,7 +259,9 @@ const App: React.FC = () => {
                       </div>
                     ))
                   ) : (
-                    <p className="text-gray-500 text-center py-4">No NFT collections deployed yet</p>
+                    <p className="text-gray-500 text-center py-4">
+                      No NFT collections deployed yet
+                    </p>
                   )}
                 </div>
               </CardContent>
