@@ -12,48 +12,46 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "./components/Navbar";
-import { useDeployToken, useDeployedTokens } from "./hooks/useFactory";
+import { useDeployToken, useDeployedTokens, useDeployNFT, useDeployedNFTs } from "./hooks/useFactory";
 
 const App: React.FC = () => {
+
   // Token form state
-  const {
-    name,
-    setName,
-    symbol,
-    setSymbol,
-    supply,
-    setSupply,
-    deployToken,
-    isLoading,
-    isSuccess,
-  } = useDeployToken();
+    const {
+      name,
+      setName,
+      symbol,
+      setSymbol,
+      supply,
+      setSupply,
+      deployToken,
+      isLoading: isTokenLoading,
+      isSuccess: isTokenSuccess,
+    } = useDeployToken();
+  
+    const { tokens, isLoading: isTokensLoading, error: tokensError } = useDeployedTokens();
+  
+    const {
+      name: nftName,
+      setName: setNFTName,
+      symbol: nftSymbol,
+      setSymbol: setNFTSymbol,
+      deployNFT,
+      isLoading: isNFTLoading,
+      isSuccess: isNFTSuccess,
+    } = useDeployNFT();
+  
+    const { nfts, isLoading: isNFTsLoading, error: nftsError } = useDeployedNFTs();
 
-  const { tokens, isLoading: loadingTokens } = useDeployedTokens();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    deployToken();
-  };
-
-  // Mock NFT deployment
-  const handleNFTDeploy = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsDeployingNFT(true);
-
-    // Simulate deployment delay
-    setTimeout(() => {
-      // Reset form
-      setNftName("");
-      setNftSymbol("");
-      setIsDeployingNFT(false);
-
-      // In a real application, we would call the contract here
-      console.log("Deploy NFT with:", { nftName, nftSymbol });
-
-      // Display success notification
-      alert(`NFT ${nftName} (${nftSymbol}) deployed successfully!`);
-    }, 2000);
-  };
+    const handleTokenSubmit = (e: React.FormEvent) => {
+      e.preventDefault(); 
+      deployToken();
+    };
+  
+    const handleNFTSubmit = (e: React.FormEvent) => {
+      e.preventDefault(); 
+      deployNFT();
+    };
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -84,7 +82,7 @@ const App: React.FC = () => {
                       supply
                     </CardDescription>
                   </CardHeader>
-                  <form onSubmit={handleSubmit}>
+                  <form onSubmit={handleTokenSubmit}>
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="tokenName">Token Name</Label>
@@ -124,11 +122,11 @@ const App: React.FC = () => {
                       <Button
                         type="submit"
                         className="w-full"
-                        disabled={isLoading}
+                        disabled={isTokenLoading}
                       >
-                        {isLoading ? "Deploying..." : "Deploy Token"}
+                        {isTokenLoading ? "Deploying..." : "Deploy Token"}
                       </Button>
-                      {isSuccess && (
+                      {isTokenSuccess && (
                         <p className="text-green-400 mt-2">
                           Token Deployed Successfully!
                         </p>
@@ -146,7 +144,7 @@ const App: React.FC = () => {
                       Create your own NFT collection with custom name and symbol
                     </CardDescription>
                   </CardHeader>
-                  <form onSubmit={handleNFTDeploy}>
+                  <form onSubmit={handleNFTSubmit}>
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="nftName">Collection Name</Label>
@@ -155,7 +153,7 @@ const App: React.FC = () => {
                           placeholder="e.g. My NFT Collection"
                           required
                           value={nftName}
-                          onChange={(e) => setNftName(e.target.value)}
+                          onChange={(e) => setNFTName(e.target.value)}
                         />
                       </div>
                       <div className="space-y-2">
@@ -166,7 +164,7 @@ const App: React.FC = () => {
                           required
                           maxLength={8}
                           value={nftSymbol}
-                          onChange={(e) => setNftSymbol(e.target.value)}
+                          onChange={(e) => setNFTSymbol(e.target.value)}
                         />
                       </div>
                     </CardContent>
@@ -174,12 +172,17 @@ const App: React.FC = () => {
                       <Button
                         type="submit"
                         className="w-full"
-                        disabled={isDeployingNFT}
+                        disabled={isNFTLoading}
                       >
-                        {isDeployingNFT
+                        {isNFTLoading
                           ? "Deploying..."
                           : "Deploy NFT Collection"}
                       </Button>
+                      {isNFTSuccess && (
+                        <p className="text-green-400 mt-2">
+                          Token Deployed Successfully!
+                        </p>
+                      )}
                     </CardFooter>
                   </form>
                 </Card>
@@ -189,7 +192,7 @@ const App: React.FC = () => {
 
           {/* Deployed Assets Section */}
           <div className="space-y-8">
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle>Your Deployed Tokens</CardTitle>
                 <CardDescription>
@@ -226,9 +229,9 @@ const App: React.FC = () => {
                   )}
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
 
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle>Your Deployed NFTs</CardTitle>
                 <CardDescription>
@@ -265,7 +268,7 @@ const App: React.FC = () => {
                   )}
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>
