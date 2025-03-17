@@ -6,7 +6,7 @@ import {
 import { useState } from "react";
 import rawFactoryABI from "../abi/Factory.json";
 
-const factoryAddress = "0x8a186cE6a80FAccca673E130D032cE36144E05E6";
+const factoryAddress = "0xF0b305D38935E6A3221B2b051b82eA831357dF42";
 const factoryABI = rawFactoryABI.abi;
 
 /**
