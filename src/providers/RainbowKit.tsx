@@ -6,14 +6,14 @@ import {
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
-import { coreDao } from "wagmi/chains";
+import { coreDao, sepolia } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { coreDaoTestnet } from "../utils/Contract";
 
 const config = getDefaultConfig({
   appName: "safelock",
   projectId: "74460544bfb6c064060e0b7eadbb35a2",
-  chains: [coreDaoTestnet, coreDao],
+  chains: [sepolia, coreDaoTestnet, coreDao],
   ssr: false,
 });
 
