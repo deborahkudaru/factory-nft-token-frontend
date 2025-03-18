@@ -62,7 +62,7 @@ const App: React.FC = () => {
     e.preventDefault();
     deployToken();
     if (!address) {
-      toast.error("Connect wallet before deploying token")
+      toast.error("Connect wallet before deploying token");
       return;
     }
   };
@@ -71,7 +71,7 @@ const App: React.FC = () => {
     e.preventDefault();
     deployNFT();
     if (!address) {
-      toast.error("Connect wallet before deploying token")
+      toast.error("Connect wallet before deploying token");
       return;
     }
   };
@@ -246,14 +246,28 @@ const App: React.FC = () => {
                             <h3 className="font-medium">
                               {token.name} ({token.symbol})
                             </h3>
-                            <h2>{token.supply} <span className="font-normal text-sm text-gray-500">tokens supplied</span></h2>
+                            <h2>
+                              {token.supply}{" "}
+                              <span className="font-normal text-sm text-gray-500">
+                                tokens supplied
+                              </span>
+                            </h2>
                             <p className="text-sm text-gray-500 mt-1">
-                              {token.tokenAddress.slice(0,5)}...
+                              {token.tokenAddress.slice(0, 5)}...
                               {token.tokenAddress.slice(-5)}
                             </p>
                           </div>
                         </div>
-                        <Button className="self-center">View on etherscan</Button>
+                        <Button className="self-center">
+                          {" "}
+                          <a
+                            href={`https://sepolia.etherscan.io/address/${token.tokenAddress}`}
+                            target="_blank"
+                             rel="noopener noreferrer"
+                          >
+                            View on etherscan
+                          </a>{" "}
+                        </Button>
                       </div>
                     ))
                   ) : (
@@ -272,7 +286,6 @@ const App: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-
                 <div className="space-y-2">
                   {isNFTsLoading ? (
                     <p className="text-gray-500 text-center py-4">
@@ -290,12 +303,20 @@ const App: React.FC = () => {
                               {nft.name} ({nft.symbol})
                             </h3>
                             <p className="text-sm text-gray-500 mt-1">
-                              {nft.nftAddress.slice(0,5)}...
+                              {nft.nftAddress.slice(0, 5)}...
                               {nft.nftAddress.slice(-5)}
                             </p>
                           </div>
                         </div>
-                        <Button className="self-center">View on Etherscan</Button>
+                        <Button className="self-center">
+                          <a
+                            href={`https://sepolia.etherscan.io/address/${nft.nftAddress}`}
+                            target="_blank"
+                             rel="noopener noreferrer"
+                          >
+                            View on Etherscan
+                          </a>
+                        </Button>
                       </div>
                     ))
                   ) : (
