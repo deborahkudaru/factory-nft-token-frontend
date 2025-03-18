@@ -19,9 +19,11 @@ import {
   useDeployedNFTs,
 } from "./hooks/useFactory";
 import { Toaster, toast } from "react-hot-toast";
+import { useAccount } from "wagmi";
 
 const App: React.FC = () => {
   // Token form state
+  const { address } = useAccount();
   const {
     name,
     setName,
@@ -59,11 +61,19 @@ const App: React.FC = () => {
   const handleTokenSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     deployToken();
+    if (!address) {
+      toast.error("Connect wallet before deploying token")
+      return;
+    }
   };
 
   const handleNFTSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     deployNFT();
+    if (!address) {
+      toast.error("Connect wallet before deploying token")
+      return;
+    }
   };
 
   if (isNFTSuccess) {
@@ -149,7 +159,7 @@ const App: React.FC = () => {
                     <CardFooter>
                       <Button
                         type="submit"
-                        className="w-full"
+                        className="w-full mt-5"
                         disabled={isTokenLoading}
                       >
                         {isTokenLoading ? "Deploying..." : "Deploy Token"}
@@ -194,7 +204,7 @@ const App: React.FC = () => {
                     <CardFooter>
                       <Button
                         type="submit"
-                        className="w-full"
+                        className="w-full mt-5"
                         disabled={isNFTLoading}
                       >
                         {isNFTLoading
@@ -229,19 +239,21 @@ const App: React.FC = () => {
                     tokens.map((token, index) => (
                       <div
                         key={index}
-                        className="p-4 rounded-lg border border-gray-200 bg-white"
+                        className="p-4 rounded-lg border border-gray-200 bg-white flex justify-between"
                       >
                         <div className="flex justify-between items-start">
                           <div>
                             <h3 className="font-medium">
                               {token.name} ({token.symbol})
                             </h3>
-                            <h2>{token.supply}</h2>
+                            <h2>{token.supply} <span className="font-normal text-sm text-gray-500">tokens supplied</span></h2>
                             <p className="text-sm text-gray-500 mt-1">
-                              {token.address}
+                              {token.tokenAddress.slice(0,5)}...
+                              {token.tokenAddress.slice(-5)}
                             </p>
                           </div>
                         </div>
+                        <Button className="self-center">View on etherscan</Button>
                       </div>
                     ))
                   ) : (
@@ -260,14 +272,9 @@ const App: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {nftsError && (
-                  <p className="text-red-500 text-center py-2">
-                    ❌ Error: {nftsError.message || "Something went wrong"}
-                  </p>
-                )}
 
                 <div className="space-y-2">
-                  {isNFTLoading ? (
+                  {isNFTsLoading ? (
                     <p className="text-gray-500 text-center py-4">
                       Loading NFTs...
                     </p>
@@ -275,7 +282,7 @@ const App: React.FC = () => {
                     nfts.map((nft, index) => (
                       <div
                         key={index}
-                        className="p-4 rounded-lg border border-gray-200 bg-white"
+                        className="p-4 rounded-lg border border-gray-200 bg-white flex justify-between"
                       >
                         <div className="flex justify-between items-start">
                           <div>
@@ -283,10 +290,12 @@ const App: React.FC = () => {
                               {nft.name} ({nft.symbol})
                             </h3>
                             <p className="text-sm text-gray-500 mt-1">
-                              {nft.address}
+                              {nft.nftAddress.slice(0,5)}...
+                              {nft.nftAddress.slice(-5)}
                             </p>
                           </div>
                         </div>
+                        <Button className="self-center">View on Etherscan</Button>
                       </div>
                     ))
                   ) : (
